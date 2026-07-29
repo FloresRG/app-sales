@@ -1,6 +1,6 @@
 <nav class="navbar navbar-dark navbar-expand-lg">
   <div class="container-md">
-    <a class="navbar-brand" routerLink="/">Prueba<span>Tecnica</span></a>
+    <a class="navbar-brand" routerLink="/">Sales<span>App</span></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
       aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -8,10 +8,19 @@
     <div class="collapse navbar-collapse" id="navbarToggler">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item me-lg-2">
-          <a class="nav-link" routerLinkActive="active" routerLink="/inicio">Inicio</a>
+          <a class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" routerLink="/">
+            <i class="ri-home-4-line me-1"></i>Inicio
+          </a>
+        </li>
+        <li class="nav-item me-lg-2">
+          <a class="nav-link" routerLinkActive="active" routerLink="/productos">
+            <i class="ri-box-3-line me-1"></i>Productos
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLinkActive="active" routerLink="/posts">Posts</a>
+          <a class="nav-link" routerLinkActive="active" routerLink="/ventas">
+            <i class="ri-shopping-cart-2-line me-1"></i>Ventas
+          </a>
         </li>
       </ul>
     </div>

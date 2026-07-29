@@ -1,3 +1,75 @@
-<section class="d-flex align-items-center justify-content-center flex-column text-center">
-  <h1 class="fw-bold mb-3">Bienvenid@ </h1>
+<section class="container-md py-5">
+
+  <!-- Encabezado -->
+  <div class="mb-5 text-center">
+    <h1 class="fw-bold">Bienvenido al Sistema de Ventas</h1>
+    <p class="text-muted">Gestiona tus productos y ventas desde aquí</p>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <!-- Tarjetas de estadísticas -->
+  <div *ngIf="!loading" class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="stat-card" id="card-total-productos">
+        <div class="stat-icon">
+          <i class="ri-box-3-line"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalProducts }}</span>
+          <span class="stat-label">Productos</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card" id="card-total-ventas">
+        <div class="stat-icon stat-icon--sales">
+          <i class="ri-shopping-cart-2-line"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalSales }}</span>
+          <span class="stat-label">Ventas Registradas</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card" id="card-total-ingresos">
+        <div class="stat-icon stat-icon--revenue">
+          <i class="ri-money-dollar-circle-line"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">Bs. {{ totalRevenue | number:'1.2-2' }}</span>
+          <span class="stat-label">Ingresos Totales</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accesos directos -->
+  <div *ngIf="!loading" class="row g-3">
+    <div class="col-md-6">
+      <a routerLink="/productos" class="shortcut-card" id="shortcut-productos">
+        <i class="ri-box-3-line"></i>
+        <div>
+          <strong>Ver Productos</strong>
+          <small>Consulta el catálogo y stock disponible</small>
+        </div>
+        <i class="ri-arrow-right-s-line ms-auto"></i>
+      </a>
+    </div>
+    <div class="col-md-6">
+      <a routerLink="/ventas" class="shortcut-card" id="shortcut-ventas">
+        <i class="ri-shopping-cart-2-line"></i>
+        <div>
+          <strong>Gestionar Ventas</strong>
+          <small>Crea nuevas ventas o consulta el historial</small>
+        </div>
+        <i class="ri-arrow-right-s-line ms-auto"></i>
+      </a>
+    </div>
+  </div>
+
 </section>
