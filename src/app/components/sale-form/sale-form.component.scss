@@ -1,0 +1,53 @@
+@import 'variables';
+
+.form-card {
+  background-color: $my-white-color;
+  border-radius: 3px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.item-row {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $my-border-color;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.subtotal-display {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $my-primary-color;
+  padding-left: 0.5rem;
+}
+
+.form-footer {
+  background-color: $my-white-color;
+  padding: 1.25rem 1.5rem;
+  border-radius: 3px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.05);
+}
+
+.total-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.total-label {
+  font-size: 0.875rem;
+  color: $my-secondary-color;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.total-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: $my-dark-color;
+}
