@@ -9,6 +9,7 @@ import { ProductService } from '../../core/services/product.service';
 })
 export class ProductsComponent implements OnInit {
   products: Product[] = [];
+  searchTerm: string = '';
   loading: boolean = false;
   error: string | null = null;
 
@@ -31,5 +32,11 @@ export class ProductsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  get filteredProducts(): Product[] {
+    if (!this.searchTerm) return this.products;
+    const term = this.searchTerm.toLowerCase();
+    return this.products.filter(p => p.name.toLowerCase().includes(term));
   }
 }

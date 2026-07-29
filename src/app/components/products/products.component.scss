@@ -18,3 +18,29 @@
     object-fit: cover;
   }
 }
+
+/* Buscador */
+.search-bar {
+  position: relative;
+  
+  .search-icon {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1.25rem;
+    z-index: 4;
+  }
+  
+  .form-control {
+    padding-left: 3.5rem;
+    border-radius: 10px;
+    border: 1px solid #e2e5e9;
+    
+    &:focus {
+      border-color: #2980b9;
+      box-shadow: 0 0 0 0.25rem rgba(41, 128, 185, 0.1);
+    }
+  }
+}
