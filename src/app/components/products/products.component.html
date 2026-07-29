@@ -1,0 +1,58 @@
+<section class="container-md py-4">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="section-title">Productos</h2>
+    <a routerLink="/ventas/nueva" class="btn btn-primary" id="btn-nueva-venta">
+      <i class="ri-add-line me-1"></i> Nueva Venta
+    </a>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2 text-muted">Cargando productos...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+    <i class="ri-error-warning-line fs-5"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Tabla de productos -->
+  <div *ngIf="!loading && !error" class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Producto</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.id }}</td>
+          <td class="fw-semibold">{{ product.name }}</td>
+          <td>S/ {{ product.price | number:'1.2-2' }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="product.stock > 0 ? 'bg-success' : 'bg-danger'"
+            >
+              {{ product.stock > 0 ? product.stock + ' disponibles' : 'Agotado' }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="products.length === 0">
+          <td colspan="4" class="text-center text-muted py-4">
+            No hay productos disponibles.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
