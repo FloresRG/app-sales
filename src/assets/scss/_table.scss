@@ -7,20 +7,32 @@
 
 table.table {
   margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
 
   thead tr th {
     font-size: 0.875rem;
     text-transform: uppercase;
     color: $my-column-title-color;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid $my-border-color;
+    padding: 1rem 0.75rem;
   }
 
   tbody tr td {
     font-size: 0.875rem;
     color: $my-dark-color;
+    vertical-align: middle;
+    border-bottom: 1px solid #ebedf2;
+    padding: 1rem 0.75rem;
   }
 
-  tbody tr:last-child{
-    border: transparent;
+  tbody tr:hover {
+    background-color: rgba($my-primary-color, 0.02);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: transparent;
   }
 
   .table-head-action {

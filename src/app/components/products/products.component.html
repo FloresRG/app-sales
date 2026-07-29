@@ -27,6 +27,7 @@
       <thead>
         <tr>
           <th scope="col">#</th>
+          <th scope="col" style="width: 70px;">Img</th>
           <th scope="col">Producto</th>
           <th scope="col">Precio</th>
           <th scope="col">Stock</th>
@@ -35,6 +36,12 @@
       <tbody>
         <tr *ngFor="let product of products">
           <td>{{ product.id }}</td>
+          <td>
+            <div class="product-catalog-thumb">
+              <img *ngIf="product.image" [src]="product.image" alt="img" />
+              <i *ngIf="!product.image" class="ri-image-line"></i>
+            </div>
+          </td>
           <td class="fw-semibold">{{ product.name }}</td>
           <td>Bs. {{ product.price | number:'1.2-2' }}</td>
           <td>

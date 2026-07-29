@@ -14,6 +14,7 @@ import Toastify from 'toastify-js';
 })
 export class SaleFormComponent implements OnInit {
   products: Product[] = [];
+  searchTerm: string = '';
   form: FormGroup;
   submitting: boolean = false;
   loadingProducts: boolean = false;
@@ -31,7 +32,6 @@ export class SaleFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
-    this.addItem();
   }
 
   get items(): FormArray {
@@ -50,6 +50,12 @@ export class SaleFormComponent implements OnInit {
     return this.getItemGroup(index).get('quantity')!;
   }
 
+  get filteredProducts(): Product[] {
+    if (!this.searchTerm) return this.products;
+    const term = this.searchTerm.toLowerCase();
+    return this.products.filter(p => p.name.toLowerCase().includes(term));
+  }
+
   loadProducts(): void {
     this.loadingProducts = true;
     this.productService.getProducts().subscribe({
@@ -64,18 +70,33 @@ export class SaleFormComponent implements OnInit {
     });
   }
 
-  addItem(): void {
-    const itemGroup: FormGroup = this.fb.group({
-      product_id: [null, [Validators.required]],
-      quantity: [1, [Validators.required, Validators.min(1)]]
-    });
-    this.items.push(itemGroup);
+  addToCart(product: Product): void {
+    // Check if product is already in cart
+    const index = this.items.controls.findIndex(
+      (ctrl) => (ctrl as FormGroup).get('product_id')?.value === product.id
+    );
+
+    if (index >= 0) {
+      // Product exists, increment quantity
+      const control = this.getQuantityControl(index);
+      const currentQty = control.value;
+      if (currentQty < product.stock) {
+        control.setValue(currentQty + 1);
+      } else {
+        this.showToast(`Stock máximo alcanzado para ${product.name}`, '#f39c12');
+      }
+    } else {
+      // Product doesn't exist, add new FormGroup
+      const itemGroup = this.fb.group({
+        product_id: [product.id, [Validators.required]],
+        quantity: [1, [Validators.required, Validators.min(1)]]
+      });
+      this.items.push(itemGroup);
+    }
   }
 
   removeItem(index: number): void {
-    if (this.items.length > 1) {
-      this.items.removeAt(index);
-    }
+    this.items.removeAt(index);
   }
 
   getProductById(id: number | null): Product | undefined {
@@ -105,7 +126,12 @@ export class SaleFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || this.submitting) return;
+    if (this.form.invalid || this.submitting || this.items.length === 0) {
+      if (this.items.length === 0) {
+        this.showToast('El carrito está vacío', '#f39c12');
+      }
+      return;
+    }
 
     const payload: CreateSaleRequest = {
       user_id: 1,
@@ -144,7 +170,6 @@ export class SaleFormComponent implements OnInit {
   }
 
   preventInvalidKeys(event: KeyboardEvent): void {
-    // Evitar signos negativos, letras (como la 'e'), suma y punto decimal en cantidades
     if (['-', 'e', 'E', '+', '.', ','].includes(event.key)) {
       event.preventDefault();
     }
@@ -155,12 +180,9 @@ export class SaleFormComponent implements OnInit {
     let value = control.value;
     const max = this.getAvailableStock(index);
     
-    // Si dejan el campo vacío o ponen menos de 1, se fuerza a 1
     if (value === null || value === undefined || value < 1) {
       control.setValue(1);
-    } 
-    // Si ponen más del stock, se fuerza al stock máximo
-    else if (max > 0 && value > max) {
+    } else if (max > 0 && value > max) {
       control.setValue(max);
       this.showToast(`Solo hay ${max} unidades disponibles de este producto`, '#f39c12');
     }

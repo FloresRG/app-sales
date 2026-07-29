@@ -1,141 +1,146 @@
-<section class="container-md py-4">
-
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="section-title">Nueva Venta</h2>
-    <a routerLink="/ventas" class="btn btn-outline-secondary" id="btn-volver-ventas">
-      <i class="ri-arrow-left-line me-1"></i> Volver
-    </a>
-  </div>
-
-  <!-- Cargando productos -->
-  <div *ngIf="loadingProducts" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2 text-muted">Cargando productos...</p>
-  </div>
-
-  <div *ngIf="!loadingProducts">
-
-    <!-- Sin productos disponibles -->
-    <div *ngIf="products.length === 0" class="alert alert-warning d-flex gap-2 align-items-center">
-      <i class="ri-error-warning-line fs-5"></i>
-      No hay productos con stock disponible.
+<div class="row g-4">
+  <!-- Panel Izquierdo: Catálogo de Productos -->
+  <div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="h4 mb-0 fw-bold">Punto de Venta</h2>
+      <a routerLink="/ventas" class="btn btn-outline-secondary">
+        <i class="ri-arrow-left-line me-1"></i> Volver a Ventas
+      </a>
     </div>
 
-    <!-- Formulario -->
-    <form *ngIf="products.length > 0" [formGroup]="form" (ngSubmit)="onSubmit()" id="form-nueva-venta">
+    <!-- Buscador -->
+    <div class="search-bar mb-4">
+      <i class="ri-search-line search-icon"></i>
+      <input 
+        type="text" 
+        class="form-control form-control-lg" 
+        placeholder="Buscar productos por nombre..." 
+        [(ngModel)]="searchTerm"
+      >
+    </div>
 
-      <div class="form-card mb-3">
-        <div formArrayName="items">
-          <div
-            *ngFor="let item of items.controls; let i = index"
-            [formGroupName]="i"
-            class="item-row mb-3"
-          >
-            <div class="row g-3 align-items-end">
+    <!-- Grid de Productos -->
+    <div class="catalog-grid">
+      <div class="text-center w-100 py-5" *ngIf="loadingProducts">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+      
+      <div class="text-center w-100 py-5 text-muted" *ngIf="!loadingProducts && filteredProducts.length === 0">
+        <i class="ri-inbox-line fs-1"></i>
+        <p class="mt-2">No se encontraron productos disponibles.</p>
+      </div>
 
-              <!-- Selector de producto -->
-              <div class="col-md-5">
-                <label [for]="'producto-' + i" class="form-label fw-semibold">
-                  Producto
-                </label>
-                <select
-                  [id]="'producto-' + i"
-                  formControlName="product_id"
-                  class="form-select"
-                  [class.is-invalid]="getProductControl(i).invalid && getProductControl(i).touched"
-                >
-                  <option [value]="null" disabled selected>Selecciona un producto</option>
-                  <option *ngFor="let product of products" [value]="product.id">
-                    {{ product.name }} — Bs. {{ product.price | number:'1.2-2' }}
-                    (Stock: {{ product.stock }})
-                  </option>
-                </select>
-                <div class="invalid-feedback">Selecciona un producto</div>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" *ngIf="!loadingProducts">
+        <div class="col" *ngFor="let product of filteredProducts">
+          <div class="product-card h-100" (click)="addToCart(product)">
+            <div class="product-img-wrapper">
+              <img *ngIf="product.image" [src]="product.image" class="product-img" [alt]="product.name">
+              <div *ngIf="!product.image" class="product-placeholder">
+                <i class="ri-image-line"></i>
               </div>
+              <span class="stock-badge">Stock: {{ product.stock }}</span>
+            </div>
+            <div class="product-info">
+              <h5 class="product-name" [title]="product.name">{{ product.name }}</h5>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="product-price">Bs. {{ product.price | number:'1.2-2' }}</span>
+                <button class="btn btn-primary btn-sm add-btn" (click)="$event.stopPropagation(); addToCart(product)">
+                  <i class="ri-shopping-cart-line"></i> Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Panel Derecho: Carrito de Compras -->
+  <div class="col-lg-4">
+    <div class="cart-sidebar">
+      <div class="cart-header">
+        <h5 class="mb-0 fw-bold">
+          <i class="ri-shopping-cart-2-fill me-2 text-primary"></i>Carrito
+        </h5>
+        <span class="badge bg-primary rounded-pill">{{ items.length }}</span>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="cart-body d-flex flex-column">
+        <!-- Lista de Items en Carrito -->
+        <div class="cart-items flex-grow-1" formArrayName="items">
+          
+          <div class="empty-cart" *ngIf="items.length === 0">
+            <i class="ri-shopping-cart-line"></i>
+            <p>Tu carrito está vacío</p>
+            <span>Haz clic en un producto para agregarlo.</span>
+          </div>
+
+          <div 
+            class="cart-item" 
+            *ngFor="let item of items.controls; let i = index" 
+            [formGroupName]="i"
+          >
+            <!-- Info del Producto Estática -->
+            <div class="item-details">
+              <h6 class="item-name">{{ getProductById(getProductControl(i).value)?.name }}</h6>
+              <span class="item-unit-price">
+                Bs. {{ getProductById(getProductControl(i).value)?.price | number:'1.2-2' }} c/u
+              </span>
+            </div>
+
+            <!-- Controles -->
+            <div class="item-actions mt-2 d-flex align-items-center justify-content-between">
               <!-- Cantidad -->
-              <div class="col-md-3">
-                <label [for]="'cantidad-' + i" class="form-label fw-semibold">
-                  Cantidad
-                </label>
+              <div class="quantity-control">
                 <input
                   type="number"
-                  [id]="'cantidad-' + i"
                   formControlName="quantity"
-                  class="form-control"
-                  [class.is-invalid]="getQuantityControl(i).invalid && getQuantityControl(i).touched"
+                  class="form-control form-control-sm text-center"
                   min="1"
                   [max]="getAvailableStock(i)"
                   (keypress)="preventInvalidKeys($event)"
                   (blur)="enforceQuantityBounds(i)"
                 />
-                <div class="invalid-feedback">
-                  La cantidad debe ser al menos 1
-                  <span *ngIf="getAvailableStock(i) > 0">
-                    y no puede superar el stock disponible ({{ getAvailableStock(i) }})
-                  </span>
-                </div>
               </div>
 
               <!-- Subtotal -->
-              <div class="col-md-3">
-                <label class="form-label fw-semibold">Subtotal</label>
-                <div class="subtotal-display">
-                  Bs. {{ getSubtotal(i) | number:'1.2-2' }}
-                </div>
+              <div class="item-subtotal fw-bold">
+                Bs. {{ getSubtotal(i) | number:'1.2-2' }}
               </div>
 
-              <!-- Botón quitar -->
-              <div class="col-md-1 d-flex align-items-end justify-content-end">
-                <button
-                  type="button"
-                  class="btn btn-outline-danger btn-sm"
-                  [id]="'btn-quitar-' + i"
-                  (click)="removeItem(i)"
-                  [disabled]="items.length === 1"
-                  title="Quitar producto"
-                >
-                  <i class="ri-delete-bin-line"></i>
-                </button>
-              </div>
-
+              <!-- Eliminar -->
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger remove-btn"
+                (click)="removeItem(i)"
+                title="Quitar"
+              >
+                <i class="ri-delete-bin-line"></i>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Agregar producto -->
-        <button
-          type="button"
-          class="btn btn-outline-primary btn-sm mt-1"
-          id="btn-agregar-producto"
-          (click)="addItem()"
-        >
-          <i class="ri-add-line me-1"></i> Agregar otro producto
-        </button>
-      </div>
+        <!-- Footer del Carrito (Total y Checkout) -->
+        <div class="cart-footer">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="total-label fs-5 fw-bold text-secondary">Total:</span>
+            <span class="total-amount fs-4 fw-bold text-dark">Bs. {{ getTotal() | number:'1.2-2' }}</span>
+          </div>
 
-      <!-- Total y Enviar -->
-      <div class="form-footer d-flex align-items-center justify-content-between">
-        <div class="total-section">
-          <span class="total-label">Total de la venta:</span>
-          <span class="total-amount">Bs. {{ getTotal() | number:'1.2-2' }}</span>
+          <button
+            type="submit"
+            class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm"
+            [disabled]="form.invalid || submitting || items.length === 0"
+          >
+            <i class="ri-checkbox-circle-line me-2" *ngIf="!submitting"></i>
+            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            {{ submitting ? 'Procesando Venta...' : 'Completar Venta' }}
+          </button>
         </div>
-        <button
-          type="submit"
-          class="btn btn-primary btn-lg"
-          id="btn-crear-venta-submit"
-          [disabled]="form.invalid || submitting"
-        >
-          <span *ngIf="!submitting">
-            <i class="ri-shopping-cart-2-line me-1"></i> Crear Venta
-          </span>
-          <span *ngIf="submitting">
-            <span class="spinner-border spinner-border-sm me-1"></span> Procesando...
-          </span>
-        </button>
-      </div>
-
-    </form>
+      </form>
+    </div>
   </div>
-
-</section>
+</div>
