@@ -1,0 +1,19 @@
+@import 'variables';
+
+.detail-row td {
+  background-color: darken($my-body-color, 2%);
+  border-top: none;
+  padding: 0;
+}
+
+.detail-container {
+  padding: 0.75rem 1.5rem;
+  border-left: 3px solid $my-primary-color;
+}
+
+.detail-thead th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: $my-secondary-color;
+  font-weight: 600;
+}

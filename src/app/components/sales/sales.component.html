@@ -1,0 +1,115 @@
+<section class="container-md py-4">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="section-title">Ventas</h2>
+    <a routerLink="/ventas/nueva" class="btn btn-primary" id="btn-crear-venta">
+      <i class="ri-add-line me-1"></i> Nueva Venta
+    </a>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2 text-muted">Cargando ventas...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+    <i class="ri-error-warning-line fs-5"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Tabla de ventas -->
+  <div *ngIf="!loading && !error">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Total</th>
+            <th scope="col">Detalle</th>
+            <th scope="col" class="table-head-action">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let sale of sales">
+            <!-- Fila principal de la venta -->
+            <tr>
+              <td>{{ sale.id }}</td>
+              <td>{{ sale.created_at }}</td>
+              <td class="fw-semibold">Bs. {{ sale.total | number:'1.2-2' }}</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  [id]="'btn-detalle-' + sale.id"
+                  (click)="toggleDetail(sale.id)"
+                  title="Ver detalles"
+                >
+                  <i class="ri-eye-line" *ngIf="expandedSaleId !== sale.id"></i>
+                  <i class="ri-eye-off-line" *ngIf="expandedSaleId === sale.id"></i>
+                  {{ expandedSaleId === sale.id ? 'Ocultar' : 'Ver' }}
+                </button>
+              </td>
+              <td class="table-data-action">
+                <div>
+                  <button
+                    class="btn p-0 border-0 bg-transparent"
+                    [id]="'btn-eliminar-' + sale.id"
+                    (click)="deleteSale(sale.id)"
+                    [disabled]="deletingId === sale.id"
+                    title="Eliminar venta"
+                  >
+                    <i
+                      class="ri-delete-bin-line text-danger"
+                      *ngIf="deletingId !== sale.id"
+                    ></i>
+                    <span
+                      class="spinner-border spinner-border-sm text-danger"
+                      *ngIf="deletingId === sale.id"
+                    ></span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Fila de detalles expandible -->
+            <tr *ngIf="expandedSaleId === sale.id" class="detail-row">
+              <td colspan="5" class="p-0">
+                <div class="detail-container">
+                  <table class="table table-sm mb-0">
+                    <thead class="detail-thead">
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let detail of sale.details">
+                        <td>{{ detail.product }}</td>
+                        <td>{{ detail.quantity }}</td>
+                        <td>Bs. {{ detail.subtotal | number:'1.2-2' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <!-- Sin ventas -->
+          <tr *ngIf="sales.length === 0">
+            <td colspan="5" class="text-center text-muted py-4">
+              No hay ventas registradas aún.
+              <a routerLink="/ventas/nueva" class="ms-1">Crear primera venta</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
