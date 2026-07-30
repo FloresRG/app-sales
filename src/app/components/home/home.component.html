@@ -1,75 +1,133 @@
-<section class="container-md py-5">
-
-  <!-- Encabezado -->
-  <div class="mb-5 text-center">
-    <h1 class="fw-bold">Bienvenido al Sistema de Ventas</h1>
-    <p class="text-muted">Gestiona tus productos y ventas desde aquí</p>
-  </div>
-
-  <!-- Spinner de carga -->
-  <div *ngIf="loading" class="text-center py-4">
-    <div class="spinner-border text-primary" role="status"></div>
-  </div>
-
-  <!-- Tarjetas de estadísticas -->
-  <div *ngIf="!loading" class="row g-4 mb-5">
-    <div class="col-md-4">
-      <div class="stat-card" id="card-total-productos">
-        <div class="stat-icon">
-          <i class="ri-box-3-line"></i>
+<!-- Hero Section -->
+<div class="home-hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="pi pi-verified"></i>
+            <span>Sistema de Gestión de Ventas</span>
         </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ totalProducts }}</span>
-          <span class="stat-label">Productos</span>
+        <h1 class="hero-title">
+            Bienvenido al<br>
+            <span class="hero-title-highlight">Panel de Control</span>
+        </h1>
+        <p class="hero-subtitle">
+            Gestiona tu inventario, registra ventas y consulta tus ingresos todo desde un solo lugar.
+        </p>
+        <div class="hero-actions">
+            <p-button
+                label="Nueva Venta"
+                icon="pi pi-plus"
+                routerLink="/ventas/nueva"
+                styleClass="p-button-lg hero-btn-primary"
+            ></p-button>
+            <p-button
+                label="Ver Catálogo"
+                icon="pi pi-box"
+                routerLink="/productos"
+                styleClass="p-button-lg p-button-outlined hero-btn-secondary"
+            ></p-button>
         </div>
-      </div>
     </div>
-    <div class="col-md-4">
-      <div class="stat-card" id="card-total-ventas">
-        <div class="stat-icon stat-icon--sales">
-          <i class="ri-shopping-cart-2-line"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ totalSales }}</span>
-          <span class="stat-label">Ventas Registradas</span>
-        </div>
-      </div>
+    <div class="hero-image">
+        <i class="pi pi-shopping-cart hero-icon-main"></i>
     </div>
-    <div class="col-md-4">
-      <div class="stat-card" id="card-total-ingresos">
-        <div class="stat-icon stat-icon--revenue">
-          <i class="ri-money-dollar-circle-line"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">Bs. {{ totalRevenue | number:'1.2-2' }}</span>
-          <span class="stat-label">Ingresos Totales</span>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
-  <!-- Accesos directos -->
-  <div *ngIf="!loading" class="row g-3">
-    <div class="col-md-6">
-      <a routerLink="/productos" class="shortcut-card" id="shortcut-productos">
-        <i class="ri-box-3-line"></i>
-        <div>
-          <strong>Ver Productos</strong>
-          <small>Consulta el catálogo y stock disponible</small>
-        </div>
-        <i class="ri-arrow-right-s-line ms-auto"></i>
-      </a>
+<!-- Stats Section -->
+<div class="stats-section">
+    <div *ngIf="loading" class="flex justify-content-center p-5">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem; color: var(--primary-color)"></i>
     </div>
-    <div class="col-md-6">
-      <a routerLink="/ventas" class="shortcut-card" id="shortcut-ventas">
-        <i class="ri-shopping-cart-2-line"></i>
-        <div>
-          <strong>Gestionar Ventas</strong>
-          <small>Crea nuevas ventas o consulta el historial</small>
-        </div>
-        <i class="ri-arrow-right-s-line ms-auto"></i>
-      </a>
-    </div>
-  </div>
 
-</section>
+    <div *ngIf="!loading" class="grid stats-grid">
+        <div class="col-12 md:col-4">
+            <div class="stat-card stat-card--products" id="card-total-productos">
+                <div class="stat-card-icon">
+                    <i class="pi pi-box"></i>
+                </div>
+                <div class="stat-card-body">
+                    <span class="stat-number">{{ totalProducts }}</span>
+                    <span class="stat-name">Productos</span>
+                    <span class="stat-desc">En catálogo activo</span>
+                </div>
+                <div class="stat-card-arrow">
+                    <i class="pi pi-arrow-right"></i>
+                </div>
+                <a routerLink="/productos" class="stat-card-link"></a>
+            </div>
+        </div>
+        <div class="col-12 md:col-4">
+            <div class="stat-card stat-card--sales" id="card-total-ventas">
+                <div class="stat-card-icon">
+                    <i class="pi pi-shopping-cart"></i>
+                </div>
+                <div class="stat-card-body">
+                    <span class="stat-number">{{ totalSales }}</span>
+                    <span class="stat-name">Ventas</span>
+                    <span class="stat-desc">Registradas en el sistema</span>
+                </div>
+                <div class="stat-card-arrow">
+                    <i class="pi pi-arrow-right"></i>
+                </div>
+                <a routerLink="/ventas" class="stat-card-link"></a>
+            </div>
+        </div>
+        <div class="col-12 md:col-4">
+            <div class="stat-card stat-card--revenue" id="card-total-ingresos">
+                <div class="stat-card-icon">
+                    <i class="pi pi-dollar"></i>
+                </div>
+                <div class="stat-card-body">
+                    <span class="stat-number">Bs. {{ totalRevenue | number:'1.2-2' }}</span>
+                    <span class="stat-name">Ingresos</span>
+                    <span class="stat-desc">Total acumulado</span>
+                </div>
+                <div class="stat-card-arrow">
+                    <i class="pi pi-arrow-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div *ngIf="!loading" class="quick-actions-section">
+    <h2 class="section-label">Accesos rápidos</h2>
+    <div class="grid">
+        <div class="col-12 sm:col-6 lg:col-3">
+            <a routerLink="/ventas/nueva" class="quick-card quick-card--pos" id="shortcut-nueva-venta">
+                <div class="quick-card-icon"><i class="pi pi-plus-circle"></i></div>
+                <div class="quick-card-text">
+                    <strong>Nueva Venta</strong>
+                    <small>Abre el punto de venta</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <a routerLink="/ventas" class="quick-card quick-card--sales" id="shortcut-ventas">
+                <div class="quick-card-icon"><i class="pi pi-list"></i></div>
+                <div class="quick-card-text">
+                    <strong>Historial de Ventas</strong>
+                    <small>Consulta y gestiona ventas</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <a routerLink="/productos" class="quick-card quick-card--products" id="shortcut-productos">
+                <div class="quick-card-icon"><i class="pi pi-box"></i></div>
+                <div class="quick-card-text">
+                    <strong>Catálogo</strong>
+                    <small>Ver productos y stock</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="quick-card quick-card--info">
+                <div class="quick-card-icon"><i class="pi pi-chart-bar"></i></div>
+                <div class="quick-card-text">
+                    <strong>Rendimiento</strong>
+                    <small>Bs. {{ (totalSales > 0 ? totalRevenue / totalSales : 0) | number:'1.2-2' }} promedio/venta</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
