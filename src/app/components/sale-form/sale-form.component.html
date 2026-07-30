@@ -44,16 +44,18 @@
                 <div class="mobile-item-controls">
                     <p-inputNumber
                         formControlName="quantity"
+                        [useGrouping]="false"
                         [showButtons]="true"
                         buttonLayout="horizontal"
                         spinnerMode="horizontal"
                         [step]="1" [min]="1" [max]="getAvailableStock(i)"
                         (onBlur)="enforceQuantityBounds(i)"
+                        (onInput)="enforceQuantityBoundsSilent(i)"
                         decrementButtonClass="p-button-secondary p-button-outlined p-button-sm"
                         incrementButtonClass="p-button-secondary p-button-outlined p-button-sm"
                         incrementButtonIcon="pi pi-plus"
                         decrementButtonIcon="pi pi-minus"
-                        [inputStyle]="{'width': '2.5rem', 'text-align': 'center', 'font-size': '0.85rem'}"
+                        [inputStyle]="{'width': '3.5rem', 'text-align': 'center', 'font-size': '0.85rem'}"
                     ></p-inputNumber>
                     <span class="font-bold text-primary text-sm">Bs. {{ getSubtotal(i) | number:'1.2-2' }}</span>
                     <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text p-button-sm p-button-rounded" (onClick)="removeItem(i)"></p-button>
@@ -168,16 +170,18 @@
                         <div class="cart-item-actions">
                             <p-inputNumber
                                 formControlName="quantity"
+                                [useGrouping]="false"
                                 [showButtons]="true"
                                 buttonLayout="horizontal"
                                 spinnerMode="horizontal"
                                 [step]="1" [min]="1" [max]="getAvailableStock(i)"
                                 (onBlur)="enforceQuantityBounds(i)"
+                                (onInput)="enforceQuantityBoundsSilent(i)"
                                 decrementButtonClass="p-button-secondary p-button-outlined"
                                 incrementButtonClass="p-button-secondary p-button-outlined"
                                 incrementButtonIcon="pi pi-plus"
                                 decrementButtonIcon="pi pi-minus"
-                                [inputStyle]="{'width': '3rem', 'text-align': 'center'}"
+                                [inputStyle]="{'width': '4rem', 'text-align': 'center'}"
                             ></p-inputNumber>
                             <div class="font-bold text-primary text-sm">Bs. {{ getSubtotal(i) | number:'1.2-2' }}</div>
                             <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text p-button-sm p-button-rounded" (onClick)="removeItem(i)"></p-button>

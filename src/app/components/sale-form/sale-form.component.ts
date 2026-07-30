@@ -304,16 +304,29 @@ export class SaleFormComponent implements OnInit {
     }
   }
 
+  /** Llamado al perder foco o presionar Enter: corrige y muestra alerta si excede stock */
   enforceQuantityBounds(index: number): void {
     const control = this.getQuantityControl(index);
     let value = control.value;
     const max = this.getAvailableStock(index);
-    
+
     if (value === null || value === undefined || value < 1) {
-      control.setValue(1);
+      control.setValue(1, { emitEvent: false });
     } else if (max > 0 && value > max) {
-      control.setValue(max);
+      control.setValue(max, { emitEvent: false });
       this.showToast('warn', 'Atención', `Solo hay ${max} unidades disponibles de este producto`);
     }
   }
+
+  /** Llamado en onInput: corrige silenciosamente sin mostrar alerta mientras el usuario escribe */
+  enforceQuantityBoundsSilent(index: number): void {
+    const control = this.getQuantityControl(index);
+    let value = control.value;
+    const max = this.getAvailableStock(index);
+
+    if (value !== null && value !== undefined && max > 0 && value > max) {
+      control.setValue(max, { emitEvent: false });
+    }
+  }
 }
+
