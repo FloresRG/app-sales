@@ -1,28 +1,9 @@
-<nav class="navbar navbar-dark navbar-expand-lg">
-  <div class="container-md">
-    <a class="navbar-brand" routerLink="/">Sales<span>App</span></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
-      aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarToggler">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item me-lg-2">
-          <a class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" routerLink="/">
-            <i class="ri-home-4-line me-1"></i>Inicio
-          </a>
-        </li>
-        <li class="nav-item me-lg-2">
-          <a class="nav-link" routerLinkActive="active" routerLink="/productos">
-            <i class="ri-box-3-line me-1"></i>Productos
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLinkActive="active" routerLink="/ventas">
-            <i class="ri-shopping-cart-2-line me-1"></i>Ventas
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+<div class="card mb-4 shadow-1">
+    <p-menubar [model]="items">
+        <ng-template pTemplate="start">
+            <a routerLink="/" class="text-xl font-bold mr-4 text-900 no-underline cursor-pointer">
+                Sales<span class="text-primary">App</span>
+            </a>
+        </ng-template>
+    </p-menubar>
+</div>
