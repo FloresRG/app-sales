@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Sale } from '../../core/models/sale.model';
 import { SaleService } from '../../core/services/sale.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-sales',
@@ -16,7 +16,8 @@ export class SalesComponent implements OnInit {
 
   constructor(
     private saleService: SaleService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -40,18 +41,27 @@ export class SalesComponent implements OnInit {
   }
 
   deleteSale(id: number): void {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta venta?')) return;
-
-    this.deletingId = id;
-    this.saleService.deleteSale(id).subscribe({
-      next: () => {
-        this.sales = this.sales.filter((s: Sale) => s.id !== id);
-        this.deletingId = null;
-        this.showToast('success', 'Éxito', 'Venta eliminada correctamente');
-      },
-      error: () => {
-        this.deletingId = null;
-        this.showToast('error', 'Error', 'Error al eliminar la venta');
+    this.confirmationService.confirm({
+      message: '¿Estás seguro de que deseas eliminar esta venta? El stock será restaurado.',
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this.deletingId = id;
+        this.saleService.deleteSale(id).subscribe({
+          next: () => {
+            this.sales = this.sales.filter((s: Sale) => s.id !== id);
+            this.deletingId = null;
+            this.showToast('success', 'Éxito', 'Venta eliminada correctamente');
+          },
+          error: () => {
+            this.deletingId = null;
+            this.showToast('error', 'Error', 'Error al eliminar la venta');
+          }
+        });
       }
     });
   }
