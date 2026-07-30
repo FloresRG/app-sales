@@ -1,78 +1,66 @@
-<section class="container-md py-4">
-
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="section-title mb-0">Catálogo de Productos</h2>
-    <a routerLink="/ventas/nueva" class="btn btn-primary shadow-sm" id="btn-nueva-venta">
-      <i class="ri-add-line me-1"></i> Nueva Venta
-    </a>
-  </div>
-
-  <!-- Buscador -->
-  <div class="search-bar mb-4" *ngIf="!loading && !error">
-    <i class="ri-search-line search-icon"></i>
-    <input 
-      type="text" 
-      class="form-control form-control-lg shadow-sm" 
-      placeholder="Buscar productos por nombre..." 
-      [(ngModel)]="searchTerm"
-    >
-  </div>
-
-  <!-- Estado de carga -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+<div class="card p-4 m-4 shadow-1">
+    <div class="flex align-items-center justify-content-between mb-4">
+        <h2 class="m-0 text-3xl font-bold">Catálogo de Productos</h2>
+        <p-button label="Nueva Venta" icon="pi pi-plus" routerLink="/ventas/nueva" styleClass="p-button-primary"></p-button>
     </div>
-    <p class="mt-2 text-muted fw-semibold">Cargando inventario...</p>
-  </div>
 
-  <!-- Error -->
-  <div *ngIf="error && !loading" class="alert alert-danger d-flex align-items-center gap-2 shadow-sm" role="alert">
-    <i class="ri-error-warning-line fs-5"></i>
-    <span>{{ error }}</span>
-  </div>
-
-  <!-- Tabla de productos -->
-  <div *ngIf="!loading && !error" class="table-responsive card border-0 shadow-sm">
-    <table class="table table-hover align-middle text-center mb-0">
-      <thead class="table-light">
-        <tr>
-          <th scope="col" class="py-3"># ID</th>
-          <th scope="col" style="width: 80px;" class="py-3">Imagen</th>
-          <th scope="col" class="text-start py-3">Nombre del Producto</th>
-          <th scope="col" class="py-3">Precio Unitario</th>
-          <th scope="col" class="py-3">Disponibilidad</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of filteredProducts">
-          <td class="fw-bold text-muted">{{ product.id }}</td>
-          <td>
-            <div class="product-catalog-thumb mx-auto shadow-sm">
-              <img *ngIf="product.image" [src]="product.image" alt="img" />
-              <i *ngIf="!product.image" class="ri-image-line"></i>
+    <p-table 
+        #dt 
+        [value]="products" 
+        [paginator]="true" 
+        [rows]="10" 
+        [loading]="loading"
+        [globalFilterFields]="['name']"
+        [rowHover]="true"
+        styleClass="p-datatable-striped"
+        [tableStyle]="{ 'min-width': '50rem' }"
+    >
+        <ng-template pTemplate="caption">
+            <div class="flex justify-content-end">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Buscar por nombre..." />
+                </span>
             </div>
-          </td>
-          <td class="fw-semibold text-start text-dark fs-6">{{ product.name }}</td>
-          <td class="fw-bold text-primary fs-6">Bs. {{ product.price | number:'1.2-2' }}</td>
-          <td>
-            <span
-              class="badge rounded-pill px-3 py-2"
-              [ngClass]="product.stock > 0 ? 'bg-success bg-opacity-10 text-success border border-success border-opacity-25' : 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25'"
-            >
-              <i [class]="product.stock > 0 ? 'ri-checkbox-circle-line' : 'ri-close-circle-line'" class="me-1"></i>
-              {{ product.stock > 0 ? product.stock + ' en stock' : 'Agotado' }}
-            </span>
-          </td>
-        </tr>
-        <tr *ngIf="filteredProducts.length === 0">
-          <td colspan="5" class="text-center text-muted py-5">
-            <i class="ri-inbox-line fs-1 d-block mb-2 opacity-50"></i>
-            <span class="fs-5">No se encontraron productos con ese nombre.</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        </ng-template>
 
-</section>
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                <th>Imagen</th>
+                <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                <th pSortableColumn="price">Precio <p-sortIcon field="price"></p-sortIcon></th>
+                <th pSortableColumn="stock">Stock <p-sortIcon field="stock"></p-sortIcon></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+            <tr>
+                <td><span class="font-bold text-500">{{ product.id }}</span></td>
+                <td>
+                    <img *ngIf="product.image" [src]="product.image" [alt]="product.name" width="50" class="shadow-2 border-round" />
+                    <i *ngIf="!product.image" class="pi pi-image text-3xl text-300"></i>
+                </td>
+                <td class="font-semibold">{{ product.name }}</td>
+                <td class="font-bold text-primary">Bs. {{ product.price | number:'1.2-2' }}</td>
+                <td>
+                    <p-tag 
+                        [value]="product.stock > 0 ? product.stock + ' en stock' : 'Agotado'" 
+                        [severity]="product.stock > 0 ? 'success' : 'danger'"
+                        [icon]="product.stock > 0 ? 'pi pi-check' : 'pi pi-times'"
+                    ></p-tag>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="5" class="text-center p-5 text-500 font-semibold">
+                    No se encontraron productos.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <div *ngIf="error && !loading" class="mt-4">
+        <p-message severity="error" [text]="error" styleClass="w-full"></p-message>
+    </div>
+</div>
