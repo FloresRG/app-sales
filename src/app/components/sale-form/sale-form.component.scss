@@ -1,32 +1,367 @@
-@import '../../../assets/scss/variables';
+/* ==============================================
+   POS LAYOUT - Desktop side-by-side / Mobile tabs
+   ============================================== */
 
-/* Panel Izquierdo: Buscador y Catálogo */
-.search-bar {
-  position: relative;
-  
-  .search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: $my-secondary-color;
-    font-size: 1.25rem;
-    z-index: 4;
+.pos-layout {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+}
+
+/* ---- Catálogo ---- */
+.pos-catalog {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.catalog-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafbfe;
+  flex-shrink: 0;
+}
+
+.catalog-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+}
+
+/* ---- Grid de productos ---- */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 1rem;
+}
+
+.product-tile {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.09);
+    border-color: var(--primary-color);
+
+    .product-tile-img img { transform: scale(1.05); }
   }
   
-  .form-control {
-    padding-left: 3rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    border: 1px solid #e2e5e9;
+  &.out-of-stock {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(80%);
     
-    &:focus {
-      border-color: $my-primary-color;
-      box-shadow: 0 0 0 0.25rem rgba($my-primary-color, 0.1);
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: #e9ecef;
+      .product-tile-img img { transform: none; }
     }
   }
 }
 
+.product-tile-img {
+  position: relative;
+  width: 100%;
+  padding-top: 70%;
+  background: #f8f9fa;
+  overflow: hidden;
+
+  img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  ::ng-deep .product-stock-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    font-size: 0.7rem;
+  }
+}
+
+.product-tile-placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; color: #dee2e6;
+}
+
+.product-tile-body {
+  padding: 0.875rem;
+  flex: 1; display: flex; flex-direction: column; justify-content: space-between;
+}
+
+.product-tile-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3748;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+
+.product-tile-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* ---- Carrito Desktop ---- */
+.pos-cart {
+  width: 340px;
+  flex-shrink: 0;
+}
+
+.cart-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cart-panel-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafbfe;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.cart-panel-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cart-panel-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+
+  &::-webkit-scrollbar { width: 5px; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+}
+
+.cart-item-row {
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 0.75rem;
+  background: #fdfdfd;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.cart-item-info {
+  margin-bottom: 0.625rem;
+}
+
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.cart-panel-footer {
+  padding: 1.25rem;
+  border-top: 1px solid #f0f0f0;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+/* ==============================================
+   MOBILE - Barra inferior + Drawer
+   ============================================== */
+
+.mobile-cart-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 900;
+  background: var(--primary-color);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  border-radius: 16px 16px 0 0;
+  user-select: none;
+
+  i { font-size: 1.2rem; }
+}
+
+.mobile-cart-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.mobile-cart-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Overlay */
+.mobile-cart-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 910;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  &.active {
+    display: block;
+    opacity: 1;
+  }
+}
+
+/* Drawer */
+.mobile-cart-drawer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 920;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+
+  &.open { transform: translateY(0); }
+}
+
+.mobile-drawer-handle {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 0 0.25rem;
+  cursor: pointer;
+
+  .handle-bar {
+    width: 40px; height: 4px;
+    border-radius: 4px;
+    background: #cbd5e1;
+  }
+}
+
+.mobile-drawer-header {
+  padding: 0.75rem 1.25rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.mobile-drawer-body {
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  flex: 1;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+}
+
+.mobile-cart-item {
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.625rem;
+  background: #fdfdfd;
+}
+
+.mobile-item-info {
+  margin-bottom: 0.5rem;
+}
+
+.mobile-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.mobile-drawer-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #f0f0f0;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+/* ==============================================
+   Responsive
+   ============================================== */
+
+@media (max-width: 992px) {
+  .pos-layout {
+    padding: 0.75rem;
+    height: auto;
+    overflow: visible;
+    padding-bottom: 80px;
+  }
+
+  .pos-catalog {
+    height: auto;
+    min-height: calc(100vh - 160px);
+  }
+
+  .catalog-body {
+    overflow-y: visible;
+    max-height: none;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+  }
+
+  .product-tile-name { font-size: 0.8rem; }
+  .product-tile-price { font-size: 0.9rem; }
+}
+
+/* ==============================================
+   ESTILOS LEGACY - Product Card
+   ============================================== */
 .product-card {
   background: white;
   border-radius: 12px;
@@ -38,7 +373,7 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-    border-color: rgba($my-primary-color, 0.4);
+    border-color: rgba(13, 110, 253, 0.4); /* $my-primary-color */
     
     .product-img {
       transform: scale(1.05);
@@ -48,7 +383,7 @@
   .product-img-wrapper {
     position: relative;
     width: 100%;
-    padding-top: 75%; /* 4:3 Aspect Ratio */
+    padding-top: 75%;
     background: #f8f9fa;
     overflow: hidden;
     
@@ -94,7 +429,7 @@
     .product-name {
       font-size: 1rem;
       font-weight: 600;
-      color: $my-dark-color;
+      color: #2d3748; /* $my-dark-color */
       margin-bottom: 0;
       white-space: nowrap;
       overflow: hidden;
@@ -104,7 +439,7 @@
     .product-price {
       font-size: 1.15rem;
       font-weight: 700;
-      color: $my-primary-color;
+      color: #0d6efd; /* $my-primary-color */
     }
 
     .add-btn {
@@ -145,7 +480,6 @@
     padding: 1rem;
     overflow-y: auto;
     
-    /* Scrollbar personalizada */
     &::-webkit-scrollbar {
       width: 6px;
     }
@@ -201,12 +535,12 @@
       font-size: 0.95rem;
       font-weight: 600;
       margin-bottom: 0.25rem;
-      color: $my-dark-color;
+      color: #2d3748; /* $my-dark-color */
     }
 
     .item-unit-price {
       font-size: 0.8rem;
-      color: $my-secondary-color;
+      color: #6c757d; /* $my-secondary-color */
     }
 
     .quantity-control {
@@ -219,7 +553,7 @@
     
     .item-subtotal {
       font-size: 1rem;
-      color: $my-primary-color;
+      color: #0d6efd; /* $my-primary-color */
     }
     
     .remove-btn {

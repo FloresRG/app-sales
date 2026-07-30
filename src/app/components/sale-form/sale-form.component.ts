@@ -18,6 +18,11 @@ export class SaleFormComponent implements OnInit {
   form: FormGroup;
   submitting: boolean = false;
   loadingProducts: boolean = false;
+  mobileCartOpen: boolean = false;
+
+  toggleMobileCart(): void {
+    this.mobileCartOpen = !this.mobileCartOpen;
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -61,7 +66,9 @@ export class SaleFormComponent implements OnInit {
     this.loadingProducts = true;
     this.productService.getProducts().subscribe({
       next: (data: Product[]) => {
-        this.products = data.filter((p: Product) => p.stock > 0);
+        // Mostramos todos los productos para que el usuario sepa que existen,
+        // pero validaremos al hacer click.
+        this.products = data;
         this.loadingProducts = false;
       },
       error: () => {
@@ -72,6 +79,11 @@ export class SaleFormComponent implements OnInit {
   }
 
   addToCart(product: Product): void {
+    if (product.stock <= 0) {
+      this.showToast('error', 'Sin stock', `No hay unidades disponibles de ${product.name}`);
+      return;
+    }
+
     const index = this.items.controls.findIndex(
       (ctrl) => (ctrl as FormGroup).get('product_id')?.value === product.id
     );
