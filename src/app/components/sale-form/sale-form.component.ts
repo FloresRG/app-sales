@@ -5,7 +5,7 @@ import { Product } from '../../core/models/product.model';
 import { CreateSaleRequest, SaleItem } from '../../core/models/sale.model';
 import { ProductService } from '../../core/services/product.service';
 import { SaleService } from '../../core/services/sale.service';
-import Toastify from 'toastify-js';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-sale-form',
@@ -23,7 +23,8 @@ export class SaleFormComponent implements OnInit {
     private fb: FormBuilder,
     private productService: ProductService,
     private saleService: SaleService,
-    private router: Router
+    private router: Router,
+    private messageService: MessageService
   ) {
     this.form = this.fb.group({
       items: this.fb.array([])
@@ -65,33 +66,31 @@ export class SaleFormComponent implements OnInit {
       },
       error: () => {
         this.loadingProducts = false;
-        this.showToast('No se pudo cargar los productos', '#e74c3c');
+        this.showToast('error', 'Error', 'No se pudo cargar los productos');
       }
     });
   }
 
   addToCart(product: Product): void {
-    // Check if product is already in cart
     const index = this.items.controls.findIndex(
       (ctrl) => (ctrl as FormGroup).get('product_id')?.value === product.id
     );
 
     if (index >= 0) {
-      // Product exists, increment quantity
       const control = this.getQuantityControl(index);
       const currentQty = control.value;
       if (currentQty < product.stock) {
         control.setValue(currentQty + 1);
       } else {
-        this.showToast(`Stock máximo alcanzado para ${product.name}`, '#f39c12');
+        this.showToast('warn', 'Atención', `Stock máximo alcanzado para ${product.name}`);
       }
     } else {
-      // Product doesn't exist, add new FormGroup
       const itemGroup = this.fb.group({
         product_id: [product.id, [Validators.required]],
         quantity: [1, [Validators.required, Validators.min(1)]]
       });
       this.items.push(itemGroup);
+      this.showToast('success', 'Agregado', `${product.name} agregado al carrito`);
     }
   }
 
@@ -128,7 +127,7 @@ export class SaleFormComponent implements OnInit {
   onSubmit(): void {
     if (this.form.invalid || this.submitting || this.items.length === 0) {
       if (this.items.length === 0) {
-        this.showToast('El carrito está vacío', '#f39c12');
+        this.showToast('warn', 'Atención', 'El carrito está vacío');
       }
       return;
     }
@@ -148,25 +147,19 @@ export class SaleFormComponent implements OnInit {
     this.saleService.createSale(payload).subscribe({
       next: (res) => {
         this.submitting = false;
-        this.showToast(`Venta #${res.sale_id} creada – Total: Bs. ${res.total.toFixed(2)}`, '#27ae60');
+        this.showToast('success', 'Éxito', `Venta #${res.sale_id} creada – Total: Bs. ${res.total.toFixed(2)}`);
         this.router.navigate(['/ventas']);
       },
       error: (err) => {
         this.submitting = false;
         const msg = err?.error?.error ?? 'Error al crear la venta';
-        this.showToast(msg, '#e74c3c');
+        this.showToast('error', 'Error', msg);
       }
     });
   }
 
-  private showToast(message: string, background: string): void {
-    Toastify({
-      text: message,
-      duration: 4000,
-      gravity: 'top',
-      position: 'right',
-      style: { background }
-    }).showToast();
+  private showToast(severity: string, summary: string, detail: string): void {
+    this.messageService.add({ severity, summary, detail, life: 4000 });
   }
 
   preventInvalidKeys(event: KeyboardEvent): void {
@@ -184,7 +177,7 @@ export class SaleFormComponent implements OnInit {
       control.setValue(1);
     } else if (max > 0 && value > max) {
       control.setValue(max);
-      this.showToast(`Solo hay ${max} unidades disponibles de este producto`, '#f39c12');
+      this.showToast('warn', 'Atención', `Solo hay ${max} unidades disponibles de este producto`);
     }
   }
 }

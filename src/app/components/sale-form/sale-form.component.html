@@ -1,146 +1,115 @@
-<div class="row g-4">
-  <!-- Panel Izquierdo: Catálogo de Productos -->
-  <div class="col-lg-8">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="h4 mb-0 fw-bold">Punto de Venta</h2>
-      <a routerLink="/ventas" class="btn btn-outline-secondary">
-        <i class="ri-arrow-left-line me-1"></i> Volver a Ventas
-      </a>
-    </div>
-
-    <!-- Buscador -->
-    <div class="search-bar mb-4">
-      <i class="ri-search-line search-icon"></i>
-      <input 
-        type="text" 
-        class="form-control form-control-lg" 
-        placeholder="Buscar productos por nombre..." 
-        [(ngModel)]="searchTerm"
-      >
-    </div>
-
-    <!-- Grid de Productos -->
-    <div class="catalog-grid">
-      <div class="text-center w-100 py-5" *ngIf="loadingProducts">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-      
-      <div class="text-center w-100 py-5 text-muted" *ngIf="!loadingProducts && filteredProducts.length === 0">
-        <i class="ri-inbox-line fs-1"></i>
-        <p class="mt-2">No se encontraron productos disponibles.</p>
-      </div>
-
-      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" *ngIf="!loadingProducts">
-        <div class="col" *ngFor="let product of filteredProducts">
-          <div class="product-card h-100" (click)="addToCart(product)">
-            <div class="product-img-wrapper">
-              <img *ngIf="product.image" [src]="product.image" class="product-img" [alt]="product.name">
-              <div *ngIf="!product.image" class="product-placeholder">
-                <i class="ri-image-line"></i>
-              </div>
-              <span class="stock-badge">Stock: {{ product.stock }}</span>
-            </div>
-            <div class="product-info">
-              <h5 class="product-name" [title]="product.name">{{ product.name }}</h5>
-              <div class="d-flex justify-content-between align-items-center mt-3">
-                <span class="product-price">Bs. {{ product.price | number:'1.2-2' }}</span>
-                <button class="btn btn-primary btn-sm add-btn" (click)="$event.stopPropagation(); addToCart(product)">
-                  <i class="ri-shopping-cart-line"></i> Agregar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Panel Derecho: Carrito de Compras -->
-  <div class="col-lg-4">
-    <div class="cart-sidebar">
-      <div class="cart-header">
-        <h5 class="mb-0 fw-bold">
-          <i class="ri-shopping-cart-2-fill me-2 text-primary"></i>Carrito
-        </h5>
-        <span class="badge bg-primary rounded-pill">{{ items.length }}</span>
-      </div>
-
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="cart-body d-flex flex-column">
-        <!-- Lista de Items en Carrito -->
-        <div class="cart-items flex-grow-1" formArrayName="items">
-          
-          <div class="empty-cart" *ngIf="items.length === 0">
-            <i class="ri-shopping-cart-line"></i>
-            <p>Tu carrito está vacío</p>
-            <span>Haz clic en un producto para agregarlo.</span>
-          </div>
-
-          <div 
-            class="cart-item" 
-            *ngFor="let item of items.controls; let i = index" 
-            [formGroupName]="i"
-          >
-            <!-- Info del Producto Estática -->
-            <div class="item-details">
-              <h6 class="item-name">{{ getProductById(getProductControl(i).value)?.name }}</h6>
-              <span class="item-unit-price">
-                Bs. {{ getProductById(getProductControl(i).value)?.price | number:'1.2-2' }} c/u
-              </span>
-            </div>
-
-            <!-- Controles -->
-            <div class="item-actions mt-2 d-flex align-items-center justify-content-between">
-              <!-- Cantidad -->
-              <div class="quantity-control">
-                <input
-                  type="number"
-                  formControlName="quantity"
-                  class="form-control form-control-sm text-center"
-                  min="1"
-                  [max]="getAvailableStock(i)"
-                  (keypress)="preventInvalidKeys($event)"
-                  (blur)="enforceQuantityBounds(i)"
-                />
-              </div>
-
-              <!-- Subtotal -->
-              <div class="item-subtotal fw-bold">
-                Bs. {{ getSubtotal(i) | number:'1.2-2' }}
-              </div>
-
-              <!-- Eliminar -->
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-danger remove-btn"
-                (click)="removeItem(i)"
-                title="Quitar"
-              >
-                <i class="ri-delete-bin-line"></i>
-              </button>
-            </div>
-          </div>
+<div class="grid p-4 m-0 gap-4">
+    <!-- Panel Izquierdo: Catálogo de Productos -->
+    <div class="col-12 lg:col-7 xl:col-8 card p-4 shadow-1">
+        <div class="flex justify-content-between align-items-center mb-4">
+            <h2 class="text-3xl font-bold m-0">Punto de Venta</h2>
+            <p-button label="Volver a Ventas" icon="pi pi-arrow-left" routerLink="/ventas" styleClass="p-button-outlined p-button-secondary"></p-button>
         </div>
 
-        <!-- Footer del Carrito (Total y Checkout) -->
-        <div class="cart-footer">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="total-label fs-5 fw-bold text-secondary">Total:</span>
-            <span class="total-amount fs-4 fw-bold text-dark">Bs. {{ getTotal() | number:'1.2-2' }}</span>
-          </div>
+        <!-- Buscador -->
+        <span class="p-input-icon-left w-full mb-4">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" class="w-full" placeholder="Buscar productos por nombre..." [(ngModel)]="searchTerm">
+        </span>
 
-          <button
-            type="submit"
-            class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm"
-            [disabled]="form.invalid || submitting || items.length === 0"
-          >
-            <i class="ri-checkbox-circle-line me-2" *ngIf="!submitting"></i>
-            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            {{ submitting ? 'Procesando Venta...' : 'Completar Venta' }}
-          </button>
+        <!-- Grid de Productos -->
+        <div *ngIf="loadingProducts" class="flex justify-content-center p-5">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
         </div>
-      </form>
+
+        <div *ngIf="!loadingProducts && filteredProducts.length === 0" class="text-center p-5 text-500">
+            <i class="pi pi-inbox text-5xl mb-3"></i>
+            <p>No se encontraron productos disponibles.</p>
+        </div>
+
+        <div class="grid" *ngIf="!loadingProducts">
+            <div class="col-12 md:col-6 xl:col-4" *ngFor="let product of filteredProducts">
+                <div class="card p-3 shadow-2 hover:shadow-4 cursor-pointer transition-all transition-duration-200 h-full flex flex-column justify-content-between" (click)="addToCart(product)">
+                    <div class="text-center mb-3 relative">
+                        <img *ngIf="product.image" [src]="product.image" class="w-8 border-round" [alt]="product.name">
+                        <div *ngIf="!product.image" class="w-8 h-8rem border-round surface-200 flex align-items-center justify-content-center mx-auto">
+                            <i class="pi pi-image text-4xl text-500"></i>
+                        </div>
+                        <p-tag [value]="'Stock: ' + product.stock" severity="success" styleClass="absolute top-0 right-0 m-2"></p-tag>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg mb-2 text-overflow-ellipsis white-space-nowrap overflow-hidden" [title]="product.name">{{ product.name }}</div>
+                        <div class="flex justify-content-between align-items-center">
+                            <span class="font-bold text-xl text-primary">Bs. {{ product.price | number:'1.2-2' }}</span>
+                            <p-button icon="pi pi-cart-plus" styleClass="p-button-rounded p-button-success p-button-sm" (onClick)="$event.stopPropagation(); addToCart(product)" pTooltip="Agregar" tooltipPosition="top"></p-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- Panel Derecho: Carrito de Compras -->
+    <div class="col-12 lg:col flex-1">
+        <div class="card p-4 shadow-1 h-full flex flex-column">
+            <div class="flex align-items-center justify-content-between border-bottom-1 surface-border pb-3 mb-3">
+                <h3 class="m-0 flex align-items-center"><i class="pi pi-shopping-cart text-primary mr-2 text-2xl"></i> Carrito</h3>
+                <p-tag [value]="items.length.toString()" severity="info" [rounded]="true"></p-tag>
+            </div>
+
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-column flex-grow-1">
+                <div class="flex-grow-1 overflow-auto" formArrayName="items" style="max-height: 55vh; padding-right: 0.5rem;">
+                    
+                    <div class="text-center p-5 text-500" *ngIf="items.length === 0">
+                        <i class="pi pi-shopping-cart text-5xl mb-3 opacity-50"></i>
+                        <p class="m-0 font-semibold">Tu carrito está vacío</p>
+                        <small>Haz clic en un producto para agregarlo.</small>
+                    </div>
+
+                    <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="border-round surface-50 p-3 mb-2 flex flex-column gap-2 border-1 surface-border">
+                        <div class="flex justify-content-between align-items-start">
+                            <div class="font-semibold text-700 w-9 text-overflow-ellipsis overflow-hidden white-space-nowrap" [title]="getProductById(getProductControl(i).value)?.name">
+                                {{ getProductById(getProductControl(i).value)?.name }}
+                            </div>
+                            <span class="text-sm text-500">Bs. {{ getProductById(getProductControl(i).value)?.price | number:'1.2-2' }}</span>
+                        </div>
+                        
+                        <div class="flex align-items-center justify-content-between">
+                            <p-inputNumber 
+                                formControlName="quantity" 
+                                [showButtons]="true" 
+                                buttonLayout="horizontal" 
+                                inputId="horizontal" 
+                                spinnerMode="horizontal" 
+                                [step]="1"
+                                [min]="1"
+                                [max]="getAvailableStock(i)"
+                                (onBlur)="enforceQuantityBounds(i)"
+                                decrementButtonClass="p-button-secondary p-button-outlined"
+                                incrementButtonClass="p-button-secondary p-button-outlined"
+                                incrementButtonIcon="pi pi-plus" 
+                                decrementButtonIcon="pi pi-minus"
+                                [inputStyle]="{'width': '3rem', 'text-align': 'center'}"
+                            ></p-inputNumber>
+                            
+                            <div class="font-bold text-primary">Bs. {{ getSubtotal(i) | number:'1.2-2' }}</div>
+                            
+                            <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text p-button-sm" (onClick)="removeItem(i)"></p-button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-top-1 surface-border pt-4 mt-auto">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <span class="text-xl text-600 font-bold">Total:</span>
+                        <span class="text-3xl font-bold text-900">Bs. {{ getTotal() | number:'1.2-2' }}</span>
+                    </div>
+
+                    <p-button 
+                        type="submit" 
+                        [label]="submitting ? 'Procesando...' : 'Completar Venta'" 
+                        icon="pi pi-check" 
+                        styleClass="w-full p-button-lg"
+                        [disabled]="form.invalid || submitting || items.length === 0"
+                        [loading]="submitting"
+                    ></p-button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
