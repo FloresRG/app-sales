@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Sale } from '../../core/models/sale.model';
 import { SaleService } from '../../core/services/sale.service';
-import Toastify from 'toastify-js';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-sales',
@@ -13,9 +13,11 @@ export class SalesComponent implements OnInit {
   loading: boolean = false;
   deletingId: number | null = null;
   error: string | null = null;
-  expandedSaleId: number | null = null;
 
-  constructor(private saleService: SaleService) {}
+  constructor(
+    private saleService: SaleService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
     this.loadSales();
@@ -32,12 +34,9 @@ export class SalesComponent implements OnInit {
       error: () => {
         this.error = 'No se pudo cargar la lista de ventas. Verifica que el servidor esté activo.';
         this.loading = false;
+        this.showToast('error', 'Error', this.error);
       }
     });
-  }
-
-  toggleDetail(saleId: number): void {
-    this.expandedSaleId = this.expandedSaleId === saleId ? null : saleId;
   }
 
   deleteSale(id: number): void {
@@ -48,22 +47,16 @@ export class SalesComponent implements OnInit {
       next: () => {
         this.sales = this.sales.filter((s: Sale) => s.id !== id);
         this.deletingId = null;
-        this.showToast('Venta eliminada correctamente', '#27ae60');
+        this.showToast('success', 'Éxito', 'Venta eliminada correctamente');
       },
       error: () => {
         this.deletingId = null;
-        this.showToast('Error al eliminar la venta', '#e74c3c');
+        this.showToast('error', 'Error', 'Error al eliminar la venta');
       }
     });
   }
 
-  private showToast(message: string, background: string): void {
-    Toastify({
-      text: message,
-      duration: 3000,
-      gravity: 'top',
-      position: 'right',
-      style: { background }
-    }).showToast();
+  private showToast(severity: string, summary: string, detail: string): void {
+    this.messageService.add({ severity, summary, detail, life: 3000 });
   }
 }
